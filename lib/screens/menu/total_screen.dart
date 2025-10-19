@@ -138,6 +138,7 @@ class _TotalScreenState extends State<TotalScreen> {
 
                     // memasukkan data detail suatu pesanan ke map pesananDetail
                     pesananDetail["pesanan-${i + 1}"] = {
+                      "item_id": item.id,
                       "name": item.name,
                       "price": item.price,
                       "quantity": quantity,

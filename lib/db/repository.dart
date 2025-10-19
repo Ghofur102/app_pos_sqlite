@@ -12,6 +12,7 @@ class Repo {
   // Getter untuk mendapatkan instance database dari AppDatabase
   Future<Database> get _db async => AppDatabase.instance.database;
 
+  
   // Menyimpan user baru ke dalam database.
   // Melempar exception jika username sudah ada.
   Future<int?> register(
@@ -99,7 +100,28 @@ class Repo {
     }
   }
 
-  Future<void> transaction() async {
+Future<void> saveTransaction(int userId, int total, List<Map<String, dynamic>> items) async {
+  final db = await _db;
+  final now = DateTime.now().toIso8601String();
 
-  }
+  await db.transaction((txn) async {
+    // 1️⃣ Simpan transaksi utama
+    final txnId = await txn.insert("txns", {
+      "user_id": userId,
+      "created_at": now,
+      "total": total,
+    });
+
+    // 2️⃣ Simpan item-item transaksi
+    for (var item in items) {
+      await txn.insert("txn_items", {
+        "txn_id": txnId,
+        "item_id": item["item_id"],
+        "qty": item["quantity"],
+        "price": item["price"],
+      });
+    }
+  });
+}
+
 }
